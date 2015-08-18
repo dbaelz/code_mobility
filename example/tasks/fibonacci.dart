@@ -14,6 +14,32 @@
  * limitations under the License.
 */
 
-library code_mobility;
+library code_mobility.example.tasks.fibonacci;
 
-export 'src/taskrunner/taskrunner.dart';
+import 'dart:isolate';
+
+main(List<String> args, SendPort sendPort) {
+  try {
+    int n = int.parse(args[0]);
+    sendPort.send(Fibonacci.calculate(n));
+  } catch (exception) {
+    sendPort.send(0);
+  }
+}
+
+class Fibonacci {
+  static int calculate(int n) {
+    if (n == 0 || n == 1) {
+      return n;
+    }
+
+    var current = 1;
+    var previous = 1;
+    for (var i = 2; i < n; i++) {
+      var next = previous + current;
+      previous = current;
+      current = next;
+    }
+    return current;
+  }
+}

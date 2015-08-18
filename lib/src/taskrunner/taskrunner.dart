@@ -14,6 +14,12 @@
  * limitations under the License.
 */
 
-library code_mobility;
+library code_mobility.taskrunner;
 
-export 'src/taskrunner/taskrunner.dart';
+import 'dart:async';
+
+abstract class TaskRunner {
+  Future<dynamic> execute(Uri filename, List<String> args);
+
+  Future<dynamic> executeFromSourceString(String sourcecode, List<String> args);
+}

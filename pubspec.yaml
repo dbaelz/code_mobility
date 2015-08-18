@@ -1,4 +1,4 @@
-name: Code Mobility
+name: code_mobility
 description: A library for code mobility with Dart.
 version: 0.0.1
 author: Daniel Bälz <me@dbaelz.de>
@@ -7,8 +7,8 @@ author: Daniel Bälz <me@dbaelz.de>
 environment:
   sdk: '>=1.0.0 <2.0.0'
 
-#dependencies:
-#  lib_name: any
+dependencies:
+  uuid: '^0.5.0'
 
 dev_dependencies:
   test: '>=0.12.0 <0.13.0'

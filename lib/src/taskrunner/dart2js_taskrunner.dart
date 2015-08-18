@@ -14,6 +14,26 @@
  * limitations under the License.
 */
 
-library code_mobility;
+library code_mobility.taskrunner.dart2js;
 
-export 'src/taskrunner/taskrunner.dart';
+import 'dart:async';
+
+import 'taskrunner.dart';
+
+class Dart2JSTaskRunner extends TaskRunner {
+  @override
+  Future<dynamic> execute(Uri filename, List<String> args) {
+    //TODO: Add implementation
+    Completer completer = new Completer()
+      ..complete(null);
+    return completer.future;
+  }
+
+  @override
+  Future<dynamic> executeFromSourceString(String sourcecode, List<String> args) {
+    //TODO: Add implementation
+    Completer completer = new Completer()
+      ..complete(null);
+    return completer.future;
+  }
+}

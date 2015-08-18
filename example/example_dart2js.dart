@@ -14,6 +14,7 @@
  * limitations under the License.
 */
 
-library code_mobility;
+library code_mobility.example.dart2js;
 
-export 'src/taskrunner/taskrunner.dart';
+main() {
+}

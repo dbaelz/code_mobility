@@ -14,6 +14,6 @@
  * limitations under the License.
 */
 
-library code_mobility;
+library code_mobility.standalone;
 
-export 'src/taskrunner/taskrunner.dart';
+export 'src/taskrunner/standalone_taskrunner.dart';
