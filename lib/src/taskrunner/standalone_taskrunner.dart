@@ -24,6 +24,8 @@ import 'package:uuid/uuid.dart';
 
 import 'taskrunner.dart';
 
+const executionError = 'Incorrect data';
+
 class StandaloneTaskRunner extends TaskRunner {
   @override
   Future<dynamic> execute(Uri filename, List<String> args) {
@@ -34,7 +36,9 @@ class StandaloneTaskRunner extends TaskRunner {
       completer.complete(message);
     });
 
-    Isolate.spawnUri(filename, args, receivePort.sendPort);
+    Isolate.spawnUri(filename, args, receivePort.sendPort).then((isolate){}).catchError((error) {
+      completer.complete(new TaskError(executionError));
+    });
     return completer.future;
   }
 
@@ -51,7 +55,10 @@ class StandaloneTaskRunner extends TaskRunner {
           file.delete();
           completer.complete(message);
         });
-        Isolate.spawnUri(file.uri, args, receivePort.sendPort);
+
+        Isolate.spawnUri(file.uri, args, receivePort.sendPort).then((isolate){}).catchError((error) {
+          completer.complete(new TaskError(executionError));
+        });
       });
     });
     return completer.future;

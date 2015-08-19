@@ -23,3 +23,9 @@ abstract class TaskRunner {
 
   Future<dynamic> executeFromSourceString(String sourcecode, List<String> args);
 }
+
+class TaskError {
+  String message;
+
+  TaskError(this.message);
+}
