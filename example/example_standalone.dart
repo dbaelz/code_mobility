@@ -35,6 +35,9 @@ main() async {
 
   String code = await _getFileAsString(uri);
   print('Execute with string and temp file: ${await runner.executeFromSourceString(code, [number])}');
+
+  Server server = new Server(new MobilityAPI(new StandaloneTaskRunner()));
+  await server.start();
 }
 
 Future<String> _getFileAsString(Uri uri) {

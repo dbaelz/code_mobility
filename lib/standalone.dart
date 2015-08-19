@@ -16,4 +16,6 @@
 
 library code_mobility.standalone;
 
+export 'src/server/mobility_api.dart';
+export 'src/server/server.dart';
 export 'src/taskrunner/standalone_taskrunner.dart';
