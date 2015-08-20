@@ -24,6 +24,7 @@ import '../taskrunner/task.dart';
 import '../taskrunner/taskrunner.dart';
 
 const pathREV = 'rev';
+const pathREVFetch = 'fetch';
 const pathCOD = 'cod';
 
 @ApiClass(name: 'mobilityapi', version: 'v1')
@@ -36,9 +37,19 @@ class MobilityAPI {
     _codInformation = new CodInformation(tasks, codResource);
   }
 
-  @ApiMethod(method: 'POST', path: pathREV, description: 'Resource for remote evaluation')
+  @ApiMethod(method: 'POST', path: pathREV, description: 'Remote evaluation with source string and data')
   Future<StringResponse> remoteEvaluation(REVRequest request) async {
     dynamic result = await _runner.executeFromSourceString(request.source, request.args);
+    if (result is TaskError) {
+      throw new BadRequestError('Invalid request: ${result.message}');
+    }
+    return new StringResponse(result.toString());
+  }
+
+  @ApiMethod(method: 'POST', path: pathREVFetch, description: 'Remote evaluation with source fetch')
+  Future<StringResponse> remoteEvaluationWithFetch(REVFetchRequest request) async {
+    Uri uri = Uri.parse(request.href);
+    dynamic result = await _runner.execute(uri, request.args);
     if (result is TaskError) {
       throw new BadRequestError('Invalid request: ${result.message}');
     }
@@ -54,6 +65,14 @@ class MobilityAPI {
 class REVRequest {
   @ApiProperty(required: true)
   String source;
+
+  @ApiProperty()
+  List<String> args;
+}
+
+class REVFetchRequest {
+  @ApiProperty(required: true)
+  String href;
 
   @ApiProperty()
   List<String> args;
