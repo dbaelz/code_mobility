@@ -33,27 +33,36 @@ class Server {
 
   HttpServer _httpServer;
   MobilityAPI _api;
+  int _port;
+  bool _discovery;
+  String _codResource;
+  String _taskDir;
 
-  Server(TaskRunner taskRunner, List<Task> tasks) {
-    _api = new MobilityAPI(taskRunner, tasks);
+  Server(TaskRunner taskRunner, List<Task> tasks,
+         {int port: 8080, bool discovery: false, String codResource: 'cod', String taskDir: 'tasks'}) {
+    _port = port;
+    _discovery = discovery;
+    _codResource = codResource;
+    _taskDir = taskDir;
+    _api = new MobilityAPI(taskRunner, tasks, _codResource);
   }
 
-  Future start({int port: 8080, bool discovery: false, String codResource: 'cod', String taskDir: 'tasks'}) async {
+  Future start() async {
     Logger.root
       ..level = Level.INFO
       ..onRecord.listen(print);
 
     _apiServer.addApi(_api);
-    if (discovery) {
+    if (_discovery) {
       _apiServer.enableDiscoveryApi();
     }
 
-    _httpServer = await HttpServer.bind(InternetAddress.ANY_IP_V4, port);
+    _httpServer = await HttpServer.bind(InternetAddress.ANY_IP_V4, _port);
     _httpServer.listen((HttpRequest request) async {
       var requestPath = request.uri.path;
       while (requestPath.contains('//')) requestPath = requestPath.replaceAll('//', '/');
 
-      String codPath = '${path.separator}${codResource}${path.separator}';
+      String codPath = '${path.separator}${_codResource}${path.separator}';
       var apiResponse;
       try {
         if (requestPath.startsWith(codPath) && requestPath.length > codPath.length) {
@@ -62,7 +71,7 @@ class Server {
           }
 
           final basePath = path.dirname(Platform.script.toString());
-          String resourcePath = '${basePath}${path.separator}${taskDir}${path.separator}';
+          String resourcePath = '${basePath}${path.separator}${_taskDir}${path.separator}';
 
           requestPath = requestPath.substring(codPath.length);
           if (requestPath.startsWith('packages/')) {

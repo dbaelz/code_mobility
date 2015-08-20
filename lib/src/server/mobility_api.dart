@@ -28,10 +28,13 @@ const pathCOD = 'cod';
 
 @ApiClass(name: 'mobilityapi', version: 'v1')
 class MobilityAPI {
-  TaskRunner _runner;
-  List<Task> _tasks;
+  final TaskRunner _runner;
+  CodInformation _codInformation;
 
-  MobilityAPI(TaskRunner this._runner, List<Task> this._tasks);
+  MobilityAPI(TaskRunner this._runner, List<Task> tasks, String codResource) {
+    tasks = tasks != null ? tasks : [];
+    _codInformation = new CodInformation(tasks, codResource);
+  }
 
   @ApiMethod(method: 'POST', path: pathREV, description: 'Resource for remote evaluation')
   Future<StringResponse> remoteEvaluation(REVRequest request) async {
@@ -43,8 +46,8 @@ class MobilityAPI {
   }
 
   @ApiMethod(path: pathCOD, description: 'Lists all available tasks for code on demand')
-  List<Task> codeOnDemand() {
-    return _tasks;
+  CodInformation codeOnDemand() {
+    return _codInformation;
   }
 }
 
@@ -60,4 +63,11 @@ class StringResponse {
   final String response;
 
   const StringResponse(this.response);
+}
+
+class CodInformation {
+  final List<Task> tasks;
+  final String codResource;
+
+  CodInformation(this.tasks, this.codResource);
 }
