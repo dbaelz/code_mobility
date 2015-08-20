@@ -14,9 +14,24 @@
  * limitations under the License.
 */
 
-library code_mobility;
+library code_mobility.client;
 
-export 'src/client/client.dart';
+import '../taskrunner/task.dart';
 
-export 'src/taskrunner/task.dart';
-export 'src/taskrunner/taskrunner.dart';
+abstract class Client {
+  var _addressServer;
+  int _portServer;
+  String _codResource = 'cod';
+
+  Client(this._addressServer, int this._portServer);
+
+  List<Task> retrieveCodTasks();
+
+  String executeLocal(String filename, List<String> args);
+
+  String executeRemote(String filename, List<String> args);
+
+  String codeOnDemand(String resource, List<String> args);
+
+  String remoteEvaluation(String resource, List<String> args, bool fetchSource);
+}
