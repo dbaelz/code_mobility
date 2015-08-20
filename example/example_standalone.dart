@@ -22,6 +22,8 @@ import 'dart:io';
 import 'package:code_mobility/code_mobility.dart';
 import 'package:code_mobility/standalone.dart';
 
+import 'tasks/fibonacci.dart';
+
 main() async {
   String number = '321';
   TaskRunner runner = new StandaloneTaskRunner();
@@ -36,7 +38,10 @@ main() async {
   String code = await _getFileAsString(uri);
   print('Execute with string and temp file: ${await runner.executeFromSourceString(code, [number])}');
 
-  Server server = new Server(new MobilityAPI(new StandaloneTaskRunner()));
+  List<Task> tasks = [];
+  tasks.add(TaskAnnotation.getAnnotation(Fibonacci));
+
+  Server server = new Server(new StandaloneTaskRunner(), tasks);
   await server.start();
 }
 

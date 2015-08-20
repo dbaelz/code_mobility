@@ -16,13 +16,15 @@
 
 library code_mobility.server;
 
+import 'dart:async';
 import 'dart:io';
 
 import 'package:logging/logging.dart';
 import 'package:rpc/rpc.dart';
 
 import 'mobility_api.dart';
-import 'dart:async';
+import '../taskrunner/task.dart';
+import '../taskrunner/taskrunner.dart';
 
 class Server {
   final Logger log = new Logger('code_mobility');
@@ -31,10 +33,11 @@ class Server {
   HttpServer _httpServer;
   MobilityAPI _api;
 
-  Server(this._api);
+  Server(TaskRunner taskRunner, List<Task> tasks) {
+    _api = new MobilityAPI(taskRunner, tasks);
+  }
 
-  Future start({int port: 8080, bool discovery: false}) async {
-    Logger.root
+  Future start({int port: 8080, bool discovery: false}) async {Logger.root
       ..level = Level.INFO
       ..onRecord.listen(print);
 

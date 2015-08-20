@@ -14,7 +14,26 @@
  * limitations under the License.
 */
 
-library code_mobility;
+library code_mobility.taskrepo;
 
-export 'src/taskrunner/task.dart';
-export 'src/taskrunner/taskrunner.dart';
+@MirrorsUsed(metaTargets: Task)
+import 'dart:mirrors';
+
+class TaskAnnotation {
+  static Task getAnnotation(Type classType) {
+    ClassMirror classMirror = reflectClass(classType);
+    var annotations = classMirror.metadata.where((element) => element.reflectee.runtimeType == Task).toList();
+    if (annotations.length == 1) {
+      return annotations.first.reflectee;
+    }
+    return null;
+  }
+}
+
+class Task {
+  final String name;
+  final String resource;
+  final String description;
+
+  const Task({this.name, this.resource, this.description: ''});
+}

@@ -20,16 +20,18 @@ import 'dart:async';
 
 import 'package:rpc/rpc.dart';
 
+import '../taskrunner/task.dart';
 import '../taskrunner/taskrunner.dart';
 
 const pathREV = 'rev';
 const pathCOD = 'cod';
 
-@ApiClass(name: 'baseapi', version: 'v1')
+@ApiClass(name: 'mobilityapi', version: 'v1')
 class MobilityAPI {
   TaskRunner _runner;
+  List<Task> _tasks;
 
-  MobilityAPI(TaskRunner this._runner);
+  MobilityAPI(TaskRunner this._runner, List<Task> this._tasks);
 
   @ApiMethod(method: 'POST', path: pathREV, description: 'Resource for remote evaluation')
   Future<StringResponse> remoteEvaluation(REVRequest request) async {
@@ -38,6 +40,11 @@ class MobilityAPI {
       throw new BadRequestError('Invalid request: ${result.message}');
     }
     return new StringResponse(result.toString());
+  }
+
+  @ApiMethod(path: pathCOD, description: 'Lists all available tasks for code on demand')
+  List<Task> codeOnDemand() {
+    return _tasks;
   }
 }
 

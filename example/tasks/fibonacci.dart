@@ -18,6 +18,8 @@ library code_mobility.example.tasks.fibonacci;
 
 import 'dart:isolate';
 
+import 'package:code_mobility/code_mobility.dart';
+
 main(List<String> args, SendPort sendPort) {
   try {
     int n = int.parse(args[0]);
@@ -27,6 +29,7 @@ main(List<String> args, SendPort sendPort) {
   }
 }
 
+@Task(name: 'Fibonacci', resource: 'fibonacci.dart', description: 'Calculates the nth fibonacci number')
 class Fibonacci {
   static int calculate(int n) {
     if (n == 0 || n == 1) {
