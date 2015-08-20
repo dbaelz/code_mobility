@@ -20,6 +20,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:logging/logging.dart';
+import 'package:path/path.dart' as path;
 import 'package:rpc/rpc.dart';
 
 import 'mobility_api.dart';
@@ -37,7 +38,8 @@ class Server {
     _api = new MobilityAPI(taskRunner, tasks);
   }
 
-  Future start({int port: 8080, bool discovery: false}) async {Logger.root
+  Future start({int port: 8080, bool discovery: false, String codResource: 'cod', String taskDir: 'tasks'}) async {
+    Logger.root
       ..level = Level.INFO
       ..onRecord.listen(print);
 
@@ -47,12 +49,60 @@ class Server {
     }
 
     _httpServer = await HttpServer.bind(InternetAddress.ANY_IP_V4, port);
-    _httpServer.listen(_apiServer.httpRequestHandler);
-    print('Server listening on http://${_httpServer.address.host}:${_httpServer.port}');
+    _httpServer.listen((HttpRequest request) async {
+      var requestPath = request.uri.path;
+      while (requestPath.contains('//')) requestPath = requestPath.replaceAll('//', '/');
+
+      String codPath = '${path.separator}${codResource}${path.separator}';
+      var apiResponse;
+      try {
+        if (requestPath.startsWith(codPath) && requestPath.length > codPath.length) {
+          if (request.method != 'GET') {
+            throw new NotFoundError();
+          }
+
+          final basePath = path.dirname(Platform.script.toString());
+          String resourcePath = '${basePath}${path.separator}${taskDir}${path.separator}';
+
+          requestPath = requestPath.substring(codPath.length);
+          if (requestPath.startsWith('packages/')) {
+            resourcePath += requestPath;
+          } else {
+            var pathSegments = requestPath.split('/');
+            if (pathSegments.length != 1) {
+              throw new NotFoundError();
+            }
+            resourcePath += pathSegments[0];
+          }
+
+          Uri uri = Uri.parse(resourcePath);
+          final File file = new File.fromUri(uri);
+          String content = await file.readAsString();
+          request.response
+            ..write(content)
+            ..close();
+          log.info('Send $resourcePath');
+        } else {
+          var apiRequest = new HttpApiRequest.fromHttpRequest(request);
+          apiResponse = await _apiServer.handleHttpApiRequest(apiRequest);
+          sendApiResponse(apiResponse, request.response);
+        }
+
+      } catch (error, stacktrace) {
+        if (error is NotFoundError) {
+          apiResponse = new HttpApiResponse.error(HttpStatus.NOT_FOUND, 'No method found matching HTTP method: ${request.method} '
+            'and url: ${request.uri.path}.', new Exception(NotFoundError), stacktrace);
+        } else {
+          apiResponse = new HttpApiResponse.error(HttpStatus.INTERNAL_SERVER_ERROR, 'Internal Server Error.', new Exception(), stacktrace);
+        }
+        sendApiResponse(apiResponse, request.response);
+      }
+    });
+    log.info('Server listening on http://${_httpServer.address.host}:${_httpServer.port}');
   }
 
   stop() {
     _httpServer.close();
-    print('Server stopped');
+    log.info('Server stopped');
   }
 }

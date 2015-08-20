@@ -1,0 +1,31 @@
+/*
+ * Copyright 2015 Daniel Bälz
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+*/
+
+library code_mobility.example.client;
+
+import 'package:code_mobility/code_mobility.dart';
+import 'package:code_mobility/standalone.dart';
+
+main() async {
+  String number = '321';
+  TaskRunner runner = new StandaloneTaskRunner();
+
+  //Code on demand: Uses the standalone server with the default configuration
+  Uri uriLocal = Uri.parse('http://localhost:8080/cod/fibonacci.dart');
+  print('Execute from local server: ${await runner.execute(uriLocal, [number])}');
+}
+
+

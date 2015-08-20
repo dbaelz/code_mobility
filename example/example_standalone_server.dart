@@ -16,37 +16,15 @@
 
 library code_mobility.example.standalone;
 
-import 'dart:async';
-import 'dart:io';
-
 import 'package:code_mobility/code_mobility.dart';
 import 'package:code_mobility/standalone.dart';
 
 import 'tasks/fibonacci.dart';
 
 main() async {
-  String number = '321';
-  TaskRunner runner = new StandaloneTaskRunner();
-
-  String scriptName = Platform.script.toString();
-  int lastIndex = scriptName.lastIndexOf('/');
-  String filename = '${scriptName.substring(0, lastIndex)}/tasks/fibonacci.dart';
-  Uri uri = Uri.parse(filename);
-
-  print('Execute with uri: ${await runner.execute(uri, [number])}');
-
-  String code = await _getFileAsString(uri);
-  print('Execute with string and temp file: ${await runner.executeFromSourceString(code, [number])}');
-
   List<Task> tasks = [];
   tasks.add(TaskAnnotation.getAnnotation(Fibonacci));
 
   Server server = new Server(new StandaloneTaskRunner(), tasks);
   await server.start();
-}
-
-Future<String> _getFileAsString(Uri uri) {
-  final completer = new Completer();
-  new File.fromUri(uri).readAsString().then((content) => completer.complete(content));
-  return completer.future;
 }
