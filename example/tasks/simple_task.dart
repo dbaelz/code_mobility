@@ -14,21 +14,22 @@
  * limitations under the License.
 */
 
-library code_mobility.example.standalone;
+library code_mobility.example.tasks.simpletest;
 
-import 'package:code_mobility/code_mobility.dart';
-import 'package:code_mobility/standalone.dart';
+import 'dart:isolate';
 
-import 'tasks/fibonacci.dart';
+main(List<String> args, SendPort sendPort) {
+  try {
+    int n = int.parse(args[0]);
+    int result = new SimpleTask().reallySimple(n);
+    sendPort.send(result);
+  } catch (exception) {
+    sendPort.send(0);
+  }
+}
 
-main() async {
-  List<Task> tasks = [];
-  tasks.add(TaskAnnotation.getAnnotation(Fibonacci));
-  tasks.add(new Task(
-      name: 'Simple Task',
-      resource: 'simple_task.dart',
-      description: 'A simple task without 3th party imports/dependencies'));
-
-  Server server = new Server(new StandaloneTaskRunner(), tasks);
-  await server.start();
+class SimpleTask {
+  reallySimple(int n) {
+    return n;
+  }
 }
