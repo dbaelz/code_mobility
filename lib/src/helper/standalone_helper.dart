@@ -16,6 +16,8 @@
 
 library code_mobility.helper.standalone;
 
+import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:path/path.dart' as path;
@@ -24,5 +26,12 @@ class StandaloneHelper {
   static String getLocalTaskPath(String taskDir, String filename) {
     final basePath = path.dirname(Platform.script.toString());
     return '${basePath}${path.separator}${taskDir}${path.separator}${filename}';
+  }
+
+  static Future<String> getLocalTaskAsJSON(String taskDir, String filename) async {
+    Uri localUri = Uri.parse(getLocalTaskPath(taskDir, filename));
+    //Open as uri required, cause of an issue with File and file:// protocol
+    String content = await new File.fromUri(localUri).readAsString();
+    return JSON.encode(content);
   }
 }
