@@ -24,7 +24,7 @@ import 'package:uuid/uuid.dart';
 
 import 'taskrunner.dart';
 
-const executionError = 'Incorrect data';
+const executionError = 'Incorrect or incomplete data';
 
 class StandaloneTaskRunner extends TaskRunner {
   @override
