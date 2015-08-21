@@ -20,12 +20,38 @@ import 'package:code_mobility/code_mobility.dart';
 import 'package:code_mobility/standalone.dart';
 
 main() async {
-  String number = '321';
-  TaskRunner runner = new StandaloneTaskRunner();
+  //Initialize standalone client for a server running with default server config on localhost
+  StandaloneClient client = new StandaloneClient('localhost', 8080, 'mobilityapi', 'v1', new StandaloneTaskRunner());
 
-  //Code on demand: Uses the standalone server with the default configuration
-  Uri uriLocal = Uri.parse('http://localhost:8080/cod/fibonacci.dart');
-  print('Execute from local server: ${await runner.execute(uriLocal, [number])}');
+  //Retrieve the available code on demand tasks and the path to the resources cod resources
+  //The path is 'cod', so the resource address is http://localhost:8080/cod/{resource})
+  List<Task> tasks = await client.retrieveCodTasks();
+  tasks.forEach((task) => print(task.resource));
+
+  //Filename of the task
+  String fibonacciFilename = tasks.where((task) => task.resource == 'fibonacci.dart').first.resource;
+  String simpleFilename = tasks.where((task) => task.resource == 'simple_task.dart').first.resource;
+  //The arguments (data) for the task
+  List<String> args = ['123'];
+
+
+  //Executes the task on the local (client) device. The source is already on the device.
+  print('Local: ${await client.executeLocal('tasks', fibonacciFilename, args)}');
+
+  //Executes the task on the remote (server) device. The source is already on the device.
+  print('Remote: ${await client.executeRemote(fibonacciFilename, args)}');
+
+  //Fetch the source from the server and execute the task on the local device.
+  print('Code on demand: ${await client.codeOnDemand(fibonacciFilename, ["123"])}');
+
+  //Executes the task on the remote (server) device.
+  //The source code is fetched by the server (with cod) from a third (code delivery) server.
+  String cdServer = 'http://localhost:4040.de/repository/';
+  print('Remote evaluation with fetch: ${await client.remoteEvaluationWithFetch(cdServer + fibonacciFilename, args)}');
+
+  //Sends the source code as string to the remote device. There it's executed.
+  //Currently only the task without the imports/dependencies is sent. Therefore it's only suitable for very simple tasks.
+  print('Remote evaluation with source: ${await client.remoteEvaluationWithSource('tasks', simpleFilename, args)}');
 }
 
 
