@@ -17,11 +17,10 @@
 library code_mobility.server.api;
 
 import 'dart:async';
-import 'dart:io';
 
-import 'package:path/path.dart' as path;
 import 'package:rpc/rpc.dart';
 
+import '../helper/standalone_helper.dart';
 import '../taskrunner/task.dart';
 import '../taskrunner/taskrunner.dart';
 
@@ -44,36 +43,33 @@ class MobilityAPI {
   @ApiMethod(method: 'POST', path: pathREV, description: 'Remote evaluation with source string and data')
   Future<StringResponse> remoteEvaluation(REVRequest request) async {
     dynamic result = await _runner.executeFromSourceString(request.source, request.args);
-    if (result is TaskError) {
-      throw new BadRequestError('Invalid request: ${result.message}');
-    }
-    return new StringResponse(result.toString());
+    return _checkForErrors(result);
   }
 
   @ApiMethod(method: 'POST', path: pathREVFetch, description: 'Remote evaluation with source fetch')
   Future<StringResponse> remoteEvaluationWithFetch(REVFetchRequest request) async {
     Uri uri = Uri.parse(request.href);
     dynamic result = await _runner.execute(uri, request.args);
-    if (result is TaskError) {
-      throw new BadRequestError('Invalid request: ${result.message}');
-    }
-    return new StringResponse(result.toString());
+    return _checkForErrors(result);
   }
 
   @ApiMethod(method: 'POST', path: pathExec, description: 'Executes local code with the given data')
   Future<StringResponse> executeWitLocalCode(ExecWithLocalRequest request) async {
-    final basePath = path.dirname(Platform.script.toString());
-    String resourcePath = '${basePath}${path.separator}${_taskDir}${path.separator}${request.filename}';
+    String resourcePath = StandaloneHelper.getLocalTaskPath(_taskDir, request.filename);
     dynamic result = await _runner.execute(Uri.parse(resourcePath), request.args);
-    if (result is TaskError) {
-      throw new BadRequestError('Invalid request: ${result.message}');
-    }
-    return new StringResponse(result.toString());
+    return _checkForErrors(result);
   }
 
   @ApiMethod(path: pathCOD, description: 'Lists all available tasks for code on demand')
   CodInformation codeOnDemand() {
     return _codInformation;
+  }
+
+  StringResponse _checkForErrors(dynamic result) {
+    if (result is TaskError) {
+      throw new BadRequestError('Invalid request: ${result.message}');
+    }
+    return new StringResponse(result.toString());
   }
 }
 
