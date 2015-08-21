@@ -17,22 +17,26 @@
 library code_mobility.server.api;
 
 import 'dart:async';
+import 'dart:io';
 
+import 'package:path/path.dart' as path;
 import 'package:rpc/rpc.dart';
 
 import '../taskrunner/task.dart';
 import '../taskrunner/taskrunner.dart';
 
+const pathExec = 'exec';
+const pathCOD = 'cod';
 const pathREV = 'rev';
 const pathREVFetch = 'fetch';
-const pathCOD = 'cod';
 
 @ApiClass(name: 'mobilityapi', version: 'v1')
 class MobilityAPI {
   final TaskRunner _runner;
   CodInformation _codInformation;
+  String _taskDir;
 
-  MobilityAPI(TaskRunner this._runner, List<Task> tasks, String codResource) {
+  MobilityAPI(TaskRunner this._runner, List<Task> tasks, String codResource, String this._taskDir) {
     tasks = tasks != null ? tasks : [];
     _codInformation = new CodInformation(tasks, codResource);
   }
@@ -50,6 +54,17 @@ class MobilityAPI {
   Future<StringResponse> remoteEvaluationWithFetch(REVFetchRequest request) async {
     Uri uri = Uri.parse(request.href);
     dynamic result = await _runner.execute(uri, request.args);
+    if (result is TaskError) {
+      throw new BadRequestError('Invalid request: ${result.message}');
+    }
+    return new StringResponse(result.toString());
+  }
+
+  @ApiMethod(method: 'POST', path: pathExec, description: 'Executes local code with the given data')
+  Future<StringResponse> executeWitLocalCode(ExecWithLocalRequest request) async {
+    final basePath = path.dirname(Platform.script.toString());
+    String resourcePath = '${basePath}${path.separator}${_taskDir}${path.separator}${request.filename}';
+    dynamic result = await _runner.execute(Uri.parse(resourcePath), request.args);
     if (result is TaskError) {
       throw new BadRequestError('Invalid request: ${result.message}');
     }
@@ -77,6 +92,15 @@ class REVFetchRequest {
   @ApiProperty()
   List<String> args;
 }
+
+class ExecWithLocalRequest {
+  @ApiProperty(required: true)
+  String filename;
+
+  @ApiProperty()
+  List<String> args;
+}
+
 
 class StringResponse {
   final String response;

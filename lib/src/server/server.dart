@@ -44,7 +44,7 @@ class Server {
     _discovery = discovery;
     _codResource = codResource;
     _taskDir = taskDir;
-    _api = new MobilityAPI(taskRunner, tasks, _codResource);
+    _api = new MobilityAPI(taskRunner, tasks, _codResource, _taskDir);
   }
 
   Future start() async {
