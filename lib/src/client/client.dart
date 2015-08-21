@@ -16,22 +16,41 @@
 
 library code_mobility.client;
 
+import 'dart:async';
+
 import '../taskrunner/task.dart';
+import '../taskrunner/taskrunner.dart';
 
 abstract class Client {
-  var _addressServer;
-  int _portServer;
-  String _codResource = 'cod';
+  var addressServer;
+  int portServer;
+  TaskRunner runner;
+  String baseUrl;
+  String execUrl;
+  String codUrl;
+  String revUrl;
+  String fetchUrl;
+  String codResource = 'cod';
 
-  Client(this._addressServer, int this._portServer);
+  Client(this.addressServer, int this.portServer, String apiName, String apiVersion, TaskRunner this.runner) {
+    baseUrl = 'http://$addressServer:$portServer/';
+    execUrl = '$baseUrl/$apiName/$apiVersion/exec';
+    codUrl = '$baseUrl/$apiName/$apiVersion/cod';
+    revUrl = '$baseUrl/$apiName/$apiVersion/rev';
+    fetchUrl = '$baseUrl/$apiName/$apiVersion/fetch';
+  }
 
-  List<Task> retrieveCodTasks();
+  String get codResourceUrl;
 
-  String executeLocal(String filename, List<String> args);
+  Future<List<Task>> retrieveCodTasks();
 
-  String executeRemote(String filename, List<String> args);
+  Future<String> executeLocal(String taskDir, String filename, List<String> args);
 
-  String codeOnDemand(String resource, List<String> args);
+  Future<String> executeRemote(String filename, List<String> args);
 
-  String remoteEvaluation(String resource, List<String> args, bool fetchSource);
+  Future<String> codeOnDemand(String filename, List<String> args);
+
+  Future<String> remoteEvaluationWithFetch(String href, List<String> args);
+
+  Future<String> remoteEvaluationWithSource(String taskDir, String filename, List<String> args);
 }
