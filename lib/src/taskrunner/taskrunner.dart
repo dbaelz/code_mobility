@@ -24,6 +24,18 @@ abstract class TaskRunner {
   Future<dynamic> executeFromSourceString(String sourcecode, List<String> args);
 }
 
+class InactiveTaskRunner extends TaskRunner {
+  @override
+  Future execute(Uri filename, List<String> args) {
+    return new Future.value("TaskRunner inactive");
+  }
+
+  @override
+  Future executeFromSourceString(String sourcecode, List<String> args) {
+    return new Future.value("TaskRunner inactive");
+  }
+}
+
 class TaskError {
   String message;
 
