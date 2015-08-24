@@ -19,10 +19,13 @@ library code_mobility.example.dart2js;
 import 'package:code_mobility/code_mobility.dart';
 import 'package:code_mobility/dart2js.dart';
 
+//Hostname of the server
+const String hostname = 'localhost';
+
 main() async {
   //Initialize dart2js client for a server running with default server config on localhost.
   //Uses InactiveTaskRunner, because there's currently no TaskRunner implementation for dart2js.
-  Dart2JSClient client = new Dart2JSClient('localhost', 8080, 'mobilityapi', 'v1', new InactiveTaskRunner());
+  Dart2JSClient client = new Dart2JSClient(hostname, 8080, 'mobilityapi', 'v1', new InactiveTaskRunner());
 
   //Retrieve the available code on demand tasks and the path to the resources cod resources
   //The path is 'cod', so the resource address is http://localhost:8080/cod/{resource})
@@ -48,7 +51,7 @@ main() async {
 
   //Executes the task on the remote (server) device.
   //The source code is fetched by the server (with cod) from a third (code delivery) server.
-  String cdServer = 'http://localhost:4040/repository/';
+  String cdServer = 'http://$hostname:4040/repository/';
   print('Remote evaluation with fetch: ${await client.remoteEvaluationWithFetch(cdServer + fibonacciFilename, args)}');
 
   //Sends the source code as string to the remote device. There it's executed.
