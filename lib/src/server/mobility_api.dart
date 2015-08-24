@@ -50,7 +50,6 @@ class MobilityAPI {
   Future<StringResponse> remoteEvaluationWithFetch(REVFetchRequest request) async {
     Uri uri = Uri.parse(request.href);
     dynamic result = await _runner.execute(uri, request.args);
-    print(result);
     return _checkForErrors(result);
   }
 
