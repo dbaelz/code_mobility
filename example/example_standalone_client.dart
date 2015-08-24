@@ -46,7 +46,7 @@ main() async {
 
   //Executes the task on the remote (server) device.
   //The source code is fetched by the server (with cod) from a third (code delivery) server.
-  String cdServer = 'http://localhost:4040.de/repository/';
+  String cdServer = 'http://localhost:4040/repository/';
   print('Remote evaluation with fetch: ${await client.remoteEvaluationWithFetch(cdServer + fibonacciFilename, args)}');
 
   //Sends the source code as string to the remote device. There it's executed.

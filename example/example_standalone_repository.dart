@@ -14,21 +14,11 @@
  * limitations under the License.
 */
 
-library code_mobility.example.standalone;
+library code_mobility.example.repository;
 
-import 'package:code_mobility/code_mobility.dart';
 import 'package:code_mobility/standalone.dart';
 
-import 'tasks/fibonacci.dart';
-
 main() async {
-  List<Task> tasks = [];
-  tasks.add(TaskAnnotation.getAnnotation(Fibonacci));
-  tasks.add(new Task(
-      name: 'Simple Task',
-      resource: 'simple_task.dart',
-      description: 'A simple task without 3th party imports/dependencies'));
-
-  MobilityServer server = new MobilityServer(new StandaloneTaskRunner(), tasks);
-  await server.start();
+  RepositoryServer repoServer = new RepositoryServer();
+  await repoServer.start();
 }

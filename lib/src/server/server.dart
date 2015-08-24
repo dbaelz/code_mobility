@@ -27,8 +27,14 @@ import 'mobility_api.dart';
 import '../taskrunner/task.dart';
 import '../taskrunner/taskrunner.dart';
 
-class Server {
-  final Logger log = new Logger('code_mobility');
+abstract class Server {
+  Future start();
+
+  stop();
+}
+
+class MobilityServer extends Server {
+  final Logger log = new Logger('code mobility server');
   final ApiServer _apiServer = new ApiServer(prettyPrint: true);
 
   HttpServer _httpServer;
@@ -38,8 +44,8 @@ class Server {
   String _codResource;
   String _taskDir;
 
-  Server(TaskRunner taskRunner, List<Task> tasks,
-         {int port: 8080, bool discovery: false, String codResource: 'cod', String taskDir: 'tasks'}) {
+  MobilityServer(TaskRunner taskRunner, List<Task> tasks,
+                 {int port: 8080, bool discovery: false, String codResource: 'cod', String taskDir: 'tasks'}) {
     _port = port;
     _discovery = discovery;
     _codResource = codResource;
@@ -47,6 +53,7 @@ class Server {
     _api = new MobilityAPI(taskRunner, tasks, _codResource, _taskDir);
   }
 
+  @override
   Future start() async {
     Logger.root
       ..level = Level.INFO
@@ -100,7 +107,7 @@ class Server {
       } catch (error, stacktrace) {
         if (error is NotFoundError) {
           apiResponse = new HttpApiResponse.error(HttpStatus.NOT_FOUND, 'No method found matching HTTP method: ${request.method} '
-            'and url: ${request.uri.path}.', new Exception(NotFoundError), stacktrace);
+          'and url: ${request.uri.path}', new Exception(NotFoundError), stacktrace);
         } else {
           apiResponse = new HttpApiResponse.error(HttpStatus.INTERNAL_SERVER_ERROR, 'Internal Server Error.', new Exception(), stacktrace);
         }
@@ -110,6 +117,76 @@ class Server {
     log.info('Server listening on http://${_httpServer.address.host}:${_httpServer.port}');
   }
 
+  @override
+  stop() {
+    _httpServer.close();
+    log.info('Server stopped');
+  }
+}
+
+class RepositoryServer extends Server {
+  final Logger log = new Logger('repository server');
+
+  HttpServer _httpServer;
+  int port;
+  String codResource;
+  String taskDir;
+
+  RepositoryServer({int this.port: 4040, String this.codResource: 'repository', String this.taskDir: 'tasks'});
+
+  @override
+  Future start() async {
+    Logger.root
+      ..level = Level.INFO
+      ..onRecord.listen(print);
+
+    _httpServer = await HttpServer.bind(InternetAddress.ANY_IP_V4, port);
+    _httpServer.listen((HttpRequest request) async {
+      var requestPath = request.uri.path;
+      while (requestPath.contains('//')) requestPath = requestPath.replaceAll('//', '/');
+
+      String codPath = '${path.separator}${codResource}${path.separator}';
+      try {
+        if (request.method == 'GET' && requestPath.startsWith(codPath) && requestPath.length > codPath.length) {
+          final basePath = path.dirname(Platform.script.toString());
+          String resourcePath = '${basePath}${path.separator}${taskDir}${path.separator}';
+
+          requestPath = requestPath.substring(codPath.length);
+          if (requestPath.startsWith('packages/')) {
+            resourcePath += requestPath;
+          } else {
+            var pathSegments = requestPath.split('/');
+            if (pathSegments.length != 1) {
+              throw new NotFoundError();
+            }
+            resourcePath += pathSegments[0];
+          }
+
+          Uri uri = Uri.parse(resourcePath);
+          final File file = new File.fromUri(uri);
+          String content = await file.readAsString();
+          request.response
+            ..write(content)
+            ..close();
+          log.info('Send $resourcePath');
+        } else {
+          request.response.statusCode = HttpStatus.NOT_FOUND;
+          request.response
+            ..write('No method found matching HTTP method: ${request.method} and url: ${request.uri.path}')
+            ..close();
+        }
+      } catch (error, stacktrace) {
+        log.info('Internal error on request \n$stacktrace');
+        request.response.statusCode = HttpStatus.INTERNAL_SERVER_ERROR;
+        request.response
+          ..write('Internal Server Error.')
+          ..close();
+      }
+    });
+    log.info('RepositoryServer listening on http://${_httpServer.address.host}:${_httpServer.port}');
+  }
+
+  @override
   stop() {
     _httpServer.close();
     log.info('Server stopped');
