@@ -42,7 +42,7 @@ main() async {
   print('Remote: ${await client.executeRemote(fibonacciFilename, args)}');
 
   //Fetch the source from the server and execute the task on the local device.
-  print('Code on demand: ${await client.codeOnDemand(fibonacciFilename, ["123"])}');
+  print('Code on demand: ${await client.codeOnDemand(fibonacciFilename, args)}');
 
   //Executes the task on the remote (server) device.
   //The source code is fetched by the server (with cod) from a third (code delivery) server.
