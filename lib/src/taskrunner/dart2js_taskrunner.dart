@@ -20,18 +20,22 @@ import 'dart:async';
 
 import 'taskrunner.dart';
 
+/// Implementation of the [TaskRunner] for the browser.
+///
+/// Due to the limitations of the browser, this is not yet supported.
 class Dart2JSTaskRunner extends TaskRunner {
+
+  /// Not supported yet, therefore returns null.
   @override
   Future<dynamic> execute(Uri filename, List<String> args) {
-    //TODO: Add implementation
     Completer completer = new Completer()
       ..complete(null);
     return completer.future;
   }
 
+  /// Not supported yet, therefore returns null.
   @override
   Future<dynamic> executeFromSourceString(String sourcecode, List<String> args) {
-    //TODO: Add implementation
     Completer completer = new Completer()
       ..complete(null);
     return completer.future;

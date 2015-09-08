@@ -26,6 +26,7 @@ import '../helper/standalone_helper.dart';
 import '../taskrunner/task.dart';
 import '../taskrunner/taskrunner.dart';
 
+/// Client implementation for the standalone vm.
 class StandaloneClient extends Client {
   StandaloneClient(addressServer, int portServer, String apiName, String apiVersion, TaskRunner runner)
       : super(addressServer, portServer, apiName, apiVersion, runner);
@@ -89,7 +90,6 @@ class StandaloneClient extends Client {
 
   dynamic _checkRunnerResult(dynamic result) {
     if (result is TaskError) {
-      // TODO: Return error
       return "error";
     }
     return result.toString();
@@ -100,7 +100,6 @@ class StandaloneClient extends Client {
     if (decoded.containsKey('response')) {
       return decoded['response'];
     } else {
-      // TODO: Handle JSON error
       return body;
     }
   }

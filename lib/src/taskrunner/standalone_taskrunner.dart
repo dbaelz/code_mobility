@@ -26,6 +26,7 @@ import 'taskrunner.dart';
 
 const executionError = 'Incorrect or incomplete data';
 
+/// Implementation of the [TaskRunner] for the standalone vm.
 class StandaloneTaskRunner extends TaskRunner {
   @override
   Future<dynamic> execute(Uri filename, List<String> args) {

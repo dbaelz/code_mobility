@@ -27,12 +27,16 @@ import 'mobility_api.dart';
 import '../taskrunner/task.dart';
 import '../taskrunner/taskrunner.dart';
 
+/// Abstract server class.
 abstract class Server {
+  /// Starts the server. Returns a [Future] that completes when the server is successful started.
   Future start();
 
+  /// Stops the server.
   stop();
 }
 
+/// Starts a mobility server which offers all code mobility features.
 class MobilityServer extends Server {
   final Logger log = new Logger('code mobility server');
   final ApiServer _apiServer = new ApiServer(prettyPrint: true);
@@ -44,6 +48,12 @@ class MobilityServer extends Server {
   String _codResource;
   String _taskDir;
 
+  /// Creates a mobility server.
+  ///
+  /// [API Discovery Service](https://developers.google.com/discovery/v1/reference/apis) is deactivated by default.
+  ///
+  /// A code on demand resource is available at http://server:port/{codResource}/{resource}
+  /// and the local tasks are in the [taskDir] subdirectory.
   MobilityServer(TaskRunner taskRunner, List<Task> tasks,
                  {int port: 8080, bool discovery: false, String codResource: 'cod', String taskDir: 'tasks'}) {
     _port = port;
@@ -124,6 +134,7 @@ class MobilityServer extends Server {
   }
 }
 
+/// The repository server is only used for code delivery, but lacks code execution features-
 class RepositoryServer extends Server {
   final Logger log = new Logger('repository server');
 
@@ -132,6 +143,10 @@ class RepositoryServer extends Server {
   String codResource;
   String taskDir;
 
+  /// Creates a repository server.
+  ///
+  /// The code is available at http://server:port/{codResource}/{resource}
+  /// and the local tasks are in the [taskDir] subdirectory.
   RepositoryServer({int this.port: 4040, String this.codResource: 'repository', String this.taskDir: 'tasks'});
 
   @override

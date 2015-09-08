@@ -27,6 +27,7 @@ import 'client.dart';
 import '../taskrunner/task.dart';
 import '../taskrunner/taskrunner.dart';
 
+/// Client implementation for the browser, compiled to JavaScript with dart2js.
 class Dart2JSClient extends Client {
   Dart2JSClient(addressServer, int portServer, String apiName, String apiVersion, TaskRunner runner)
   : super(addressServer, portServer, apiName, apiVersion, runner);
@@ -97,7 +98,6 @@ class Dart2JSClient extends Client {
     if (decoded.containsKey('response')) {
       return decoded['response'];
     } else {
-      // TODO: Handle JSON error
       return body;
     }
   }

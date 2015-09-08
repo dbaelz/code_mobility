@@ -14,6 +14,7 @@
  * limitations under the License.
 */
 
+/// The code mobility library includes all common classes for code mobility.
 library code_mobility;
 
 export 'src/client/client.dart';

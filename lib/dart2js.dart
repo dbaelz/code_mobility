@@ -14,6 +14,8 @@
  * limitations under the License.
 */
 
+/// The dart2js library includes all features for browser-based applications.
+/// It's imported when the application is compiled with dart2js for the browser.
 library code_mobility.dart2js;
 
 export 'src/client/dart2js_client.dart';

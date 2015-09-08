@@ -19,7 +19,11 @@ library code_mobility.taskrepo;
 @MirrorsUsed(metaTargets: Task)
 import 'dart:mirrors';
 
+/// A parser for class annotations.
 class TaskAnnotation {
+  /// Parses the given [classType] class for the [Task] annotation.
+  ///
+  /// Returns null if the annotation does not exist.
   static Task getAnnotation(Type classType) {
     ClassMirror classMirror = reflectClass(classType);
     var annotations = classMirror.metadata.where((element) => element.reflectee.runtimeType == Task).toList();
@@ -30,6 +34,9 @@ class TaskAnnotation {
   }
 }
 
+/// Definition of a task.
+///
+/// Every task consists of a name, resource and description.
 class Task {
   final String name;
   final String resource;

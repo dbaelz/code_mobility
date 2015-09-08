@@ -22,12 +22,15 @@ import 'dart:io';
 
 import 'package:path/path.dart' as path;
 
+/// Helper class with frequently used functionality for the standalone vm.
 class StandaloneHelper {
+  /// Returns the absolute path of the local task directory as a String.
   static String getLocalTaskPath(String taskDir, String filename) {
     final basePath = path.dirname(Platform.script.toString());
     return '${basePath}${path.separator}${taskDir}${path.separator}${filename}';
   }
 
+  /// Returns a [Future<String>] that completes with the content of a Dart file as String.
   static Future<String> getLocalTaskAsJSON(String taskDir, String filename) async {
     Uri localUri = Uri.parse(getLocalTaskPath(taskDir, filename));
     //Open as uri required, cause of an issue with File and file:// protocol

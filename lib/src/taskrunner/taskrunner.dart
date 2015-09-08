@@ -18,12 +18,16 @@ library code_mobility.taskrunner;
 
 import 'dart:async';
 
+/// Abstract class of a task runner, which executes a task.
 abstract class TaskRunner {
+  /// Executes the task with the [filename] and the [args] data.
   Future<dynamic> execute(Uri filename, List<String> args);
 
+  /// Executes the task with the [sourcecode] and the [args] data.
   Future<dynamic> executeFromSourceString(String sourcecode, List<String> args);
 }
 
+/// This task runner is inactive and returns only an information about its status.
 class InactiveTaskRunner extends TaskRunner {
   @override
   Future execute(Uri filename, List<String> args) {
@@ -36,6 +40,7 @@ class InactiveTaskRunner extends TaskRunner {
   }
 }
 
+/// Error object for invalid task executions.
 class TaskError {
   String message;
 
