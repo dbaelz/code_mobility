@@ -50,21 +50,21 @@ abstract class Client {
   /// Returns a [:Future<List<Task>>:] that completes with a list available code on demand tasks fetched from the server.
   Future<List<Task>> retrieveCodTasks();
 
-  /// Returns a [:Future<String>:] that completes with the result of a local task execution.
+  /// Returns a [:Future<String>:] that completes with the result of a local execution.
   Future<String> executeLocal(String taskDir, String filename, List<String> args);
 
-  /// Returns a [:Future<String>:] that completes with the result of a remote task execution.
+  /// Returns a [:Future<String>:] that completes with the result of a remote execution.
   Future<String> executeRemote(String filename, List<String> args);
 
-  /// Returns a [:Future<String>:] that completes with the result of code on demand task execution.
+  /// Returns a [:Future<String>:] that completes with the result of code on demand execution.
   Future<String> codeOnDemand(String filename, List<String> args);
 
-  /// Returns a [:Future<String>:] that completes with the result of a remote evaluation task execution.
+  /// Returns a [:Future<String>:] that completes with the result of a remote evaluation execution.
   ///
   /// In this method the server fetches the required source code from [href].
   Future<String> remoteEvaluationWithFetch(String href, List<String> args);
 
-  /// Returns a [:Future<String>:] that completes with the result of a remote evaluation task execution.
+  /// Returns a [:Future<String>:] that completes with the result of a remote evaluation execution.
   ///
   /// In this method the required source code is sent with the data.
   Future<String> remoteEvaluationWithSource(String taskDir, String filename, List<String> args);
