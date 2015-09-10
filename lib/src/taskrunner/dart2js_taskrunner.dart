@@ -17,14 +17,11 @@
 library code_mobility.taskrunner.dart2js;
 
 import 'dart:async';
-import 'dart:html';
 import 'dart:isolate';
 
 import 'taskrunner.dart';
 
 /// Implementation of the [TaskRunner] for the browser.
-///
-/// Due to the limitations of the browser, this is not yet supported.
 class Dart2JSTaskRunner extends TaskRunner {
   @override
   Future<dynamic> execute(Uri filename, List<String> args) {
