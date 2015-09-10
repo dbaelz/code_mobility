@@ -24,8 +24,7 @@ const String hostname = 'localhost';
 
 main() async {
   //Initialize dart2js client for a server running with default server config on localhost.
-  //Uses InactiveTaskRunner, because there's currently no TaskRunner implementation for dart2js.
-  Dart2JSClient client = new Dart2JSClient(hostname, 8080, 'mobilityapi', 'v1', new InactiveTaskRunner());
+  Dart2JSClient client = new Dart2JSClient(hostname, 8080, 'mobilityapi', 'v1', new Dart2JSTaskRunner());
 
   //Retrieve the available code on demand tasks and the path to the resources cod resources
   //The path is 'cod', so the resource address is http://localhost:8080/cod/{resource})
@@ -38,19 +37,20 @@ main() async {
   //The arguments (data) for the task
   List<String> args = ['123'];
 
-  //Executes the task on the local (client) device. Currently not available for dart2js.
-  //InactiveTaskRunner returns always 'TaskRunner inactive'.
+  //Executes the task on the local (client) device.
+  //The task must be available as filename.dart.js file in the tasks directory.
   print('Local: ${await client.executeLocal('tasks', fibonacciFilename, args)}');
 
   //Executes the task on the remote (server) device. The source is already on the device.
   print('Remote: ${await client.executeRemote(fibonacciFilename, args)}');
 
   //Fetch the source from the server and execute the task on the local device.
-  //Not available for dart2js. InactiveTaskRunner returns always 'TaskRunner inactive'.
-  print('Code on demand: ${await client.codeOnDemand(fibonacciFilename, ["123"])}');
+  //The task must be available as filename.dart.js file in the tasks directory of the server.
+  print('Code on demand: ${await client.codeOnDemand(fibonacciFilename, args)}');
 
   //Executes the task on the remote (server) device.
   //The source code is fetched by the server (with cod) from a third (code delivery) server.
+  //It must be available as filename.dart.js in the tasks directory of the code delivery server.
   String cdServer = 'http://$hostname:4040/repository/';
   print('Remote evaluation with fetch: ${await client.remoteEvaluationWithFetch(cdServer + fibonacciFilename, args)}');
 

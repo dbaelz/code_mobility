@@ -18,7 +18,6 @@ library code_mobility.client.dart2js;
 
 import 'dart:async';
 import 'dart:convert';
-import 'dart:html';
 
 import 'package:http/browser_client.dart';
 import 'package:http/http.dart' as http;
@@ -33,7 +32,7 @@ class Dart2JSClient extends Client {
   : super(addressServer, portServer, apiName, apiVersion, runner);
 
   @override
-  String get codResourceUrl => null;
+  String get codResourceUrl => '${baseUrl}${codResource}';
 
   @override
   Future<List<Task>> retrieveCodTasks() async {
@@ -70,9 +69,11 @@ class Dart2JSClient extends Client {
 
   @override
   Future<String> codeOnDemand(String filename, List<String> args) async {
-    String url = '${codResourceUrl}/${filename}';
-    var result = await runner.execute(Uri.parse(url), args);
-    return result;
+    var client = new BrowserClient();
+    String url = '${codResourceUrl}/${filename}.js';
+    http.Response response = await client.get(url);
+    var result = await runner.executeFromSourceString(response.body, args);
+    return _checkRunnerResult(result);
   }
 
   @override
@@ -91,6 +92,13 @@ class Dart2JSClient extends Client {
     String body = '{"source":${source},"args":${JSON.encode(args)}}';
     http.Response response = await client.post(revUrl, body: body);
     return _checkJSONResult(response.body);
+  }
+
+  dynamic _checkRunnerResult(dynamic result) {
+    if (result is TaskError) {
+      return result.message;
+    }
+    return result.toString();
   }
 
   String _checkJSONResult(String body) {

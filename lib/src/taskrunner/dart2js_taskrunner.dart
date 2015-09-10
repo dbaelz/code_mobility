@@ -17,6 +17,8 @@
 library code_mobility.taskrunner.dart2js;
 
 import 'dart:async';
+import 'dart:html';
+import 'dart:isolate';
 
 import 'taskrunner.dart';
 
@@ -24,20 +26,26 @@ import 'taskrunner.dart';
 ///
 /// Due to the limitations of the browser, this is not yet supported.
 class Dart2JSTaskRunner extends TaskRunner {
-
-  /// Not supported yet, therefore returns null.
   @override
   Future<dynamic> execute(Uri filename, List<String> args) {
-    Completer completer = new Completer()
-      ..complete(null);
+    final completer = new Completer();
+    ReceivePort receivePort = new ReceivePort();
+    receivePort.listen((message) {
+      receivePort.close();
+      completer.complete(message);
+    });
+
+    Isolate.spawnUri(filename, args, receivePort.sendPort).then((isolate){}).catchError((error) {
+      print(error);
+      completer.complete(new TaskError(executionError));
+    });
     return completer.future;
   }
 
-  /// Not supported yet, therefore returns null.
+  /// Evaluation of source code (including main methods) is currently not supported.
   @override
   Future<dynamic> executeFromSourceString(String sourcecode, List<String> args) {
-    Completer completer = new Completer()
-      ..complete(null);
+    Completer completer = new Completer()..complete(new TaskError(executionError));
     return completer.future;
   }
 }
