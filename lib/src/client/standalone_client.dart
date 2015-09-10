@@ -90,7 +90,7 @@ class StandaloneClient extends Client {
 
   dynamic _checkRunnerResult(dynamic result) {
     if (result is TaskError) {
-      return "error";
+      return result.message;
     }
     return result.toString();
   }
