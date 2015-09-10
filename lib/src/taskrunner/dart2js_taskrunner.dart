@@ -33,7 +33,6 @@ class Dart2JSTaskRunner extends TaskRunner {
     });
 
     Isolate.spawnUri(filename, args, receivePort.sendPort).then((isolate){}).catchError((error) {
-      print(error);
       completer.complete(new TaskError(executionError));
     });
     return completer.future;
@@ -42,7 +41,7 @@ class Dart2JSTaskRunner extends TaskRunner {
   /// Evaluation of source code (including main methods) is currently not supported.
   @override
   Future<dynamic> executeFromSourceString(String sourcecode, List<String> args) {
-    Completer completer = new Completer()..complete(new TaskError(executionError));
+    Completer completer = new Completer()..complete(new TaskError(notSupportedError));
     return completer.future;
   }
 }

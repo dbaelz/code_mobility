@@ -19,6 +19,7 @@ library code_mobility.taskrunner;
 import 'dart:async';
 
 const executionError = 'Incorrect or incomplete data';
+const notSupportedError = 'This functionality is not supported on this platform';
 
 /// Abstract class of a task runner, which executes a task.
 abstract class TaskRunner {
