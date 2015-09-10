@@ -18,6 +18,8 @@ library code_mobility.taskrunner;
 
 import 'dart:async';
 
+const executionError = 'Incorrect or incomplete data';
+
 /// Abstract class of a task runner, which executes a task.
 abstract class TaskRunner {
   /// Executes the task with the [filename] and the [args] data.
