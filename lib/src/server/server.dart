@@ -105,6 +105,7 @@ class MobilityServer extends Server {
           final File file = new File.fromUri(uri);
           String content = await file.readAsString();
           request.response
+            ..headers.add('Access-Control-Allow-Origin', '*')
             ..write(content)
             ..close();
           log.info('Send $resourcePath');
@@ -181,6 +182,7 @@ class RepositoryServer extends Server {
           final File file = new File.fromUri(uri);
           String content = await file.readAsString();
           request.response
+            ..headers.add('Access-Control-Allow-Origin', '*')
             ..write(content)
             ..close();
           log.info('Send $resourcePath');
