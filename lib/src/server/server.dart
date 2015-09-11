@@ -52,8 +52,9 @@ class MobilityServer extends Server {
   ///
   /// [API Discovery Service](https://developers.google.com/discovery/v1/reference/apis) is deactivated by default.
   ///
-  /// A code on demand resource is available at http://server:port/{codResource}/{resource}
-  /// and the local tasks are in the [taskDir] subdirectory.
+  /// In [tasks] all available tasks and their metadata are listed.
+  /// The local directory for tasks is the [taskDir] subdirectory.
+  /// A code on demand resources is available at http://server:port/{codResource}/{resource}
   MobilityServer(TaskRunner taskRunner, List<Task> tasks,
                  {int port: 8080, bool discovery: false, String codResource: 'cod', String taskDir: 'tasks'}) {
     _port = port;
