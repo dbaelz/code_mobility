@@ -16,6 +16,8 @@
 
 library code_mobility.example.dart2js;
 
+import 'dart:html';
+
 import 'package:code_mobility/code_mobility.dart';
 import 'package:code_mobility/dart2js.dart';
 
@@ -39,23 +41,33 @@ main() async {
 
   //Executes the task on the local (client) device.
   //The task must be available as filename.dart.js file in the tasks directory.
-  print('Local: ${await client.executeLocal('tasks', fibonacciFilename, args)}');
+  String local = 'Local: ${await client.executeLocal('tasks', fibonacciFilename, args)}';
+  print(local);
+  document.body.append(new Element.div()..setInnerHtml(local));
 
   //Executes the task on the remote (server) device. The source is already on the device.
-  print('Remote: ${await client.executeRemote(fibonacciFilename, args)}');
+  String remote = 'Remote: ${await client.executeRemote(fibonacciFilename, args)}';
+  print(remote);
+  document.body.append(new Element.div()..setInnerHtml(remote));
 
   //Fetch the source from the server and execute the task on the local device.
   //The task must be available as filename.dart.js file in the tasks directory of the server.
-  print('Code on demand: ${await client.codeOnDemand(fibonacciFilename, args)}');
+  String cod = 'Code on demand: ${await client.codeOnDemand(fibonacciFilename, args)}';
+  print(cod);
+  document.body.append(new Element.div()..setInnerHtml(cod));
 
   //Executes the task on the remote (server) device.
   //The source code is fetched by the server (with cod) from a third (code delivery) server.
   //It must be available as filename.dart.js in the tasks directory of the code delivery server.
   String cdServer = 'http://$hostname:4040/repository/';
-  print('Remote evaluation with fetch: ${await client.remoteEvaluationWithFetch(cdServer + fibonacciFilename, args)}');
+  String revFetch = 'Remote evaluation with fetch: ${await client.remoteEvaluationWithFetch(cdServer + fibonacciFilename, args)}';
+  print(revFetch);
+  document.body.append(new Element.div()..setInnerHtml(revFetch));
 
   //Sends the source code as string to the remote device. There it's executed.
   //Currently only the task without the imports/dependencies is sent. Therefore it's only suitable for very simple tasks.
   //The file must be available as *.dart file.
-  print('Remote evaluation with source: ${await client.remoteEvaluationWithSource('tasks', simpleFilename, args)}');
+  String rev = 'Remote evaluation with source: ${await client.remoteEvaluationWithSource('tasks', simpleFilename, args)}';
+  print(rev);
+  document.body.append(new Element.div()..setInnerHtml(rev));
 }
