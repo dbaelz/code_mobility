@@ -25,19 +25,19 @@ import '../taskrunner/task.dart';
 import '../taskrunner/taskrunner.dart';
 
 const pathExec = 'exec';
-const pathCOD = 'cod';
+const pathTaskList = 'tasks';
 const pathREV = 'rev';
 const pathREVFetch = 'fetch';
 
 @ApiClass(name: 'mobilityapi', version: 'v1')
 class MobilityAPI {
   final TaskRunner _runner;
-  CodInformation _codInformation;
+  TaskList _taskList;
   String _taskDir;
 
   MobilityAPI(TaskRunner this._runner, List<Task> tasks, String codResource, String this._taskDir) {
     tasks = tasks != null ? tasks : [];
-    _codInformation = new CodInformation(tasks, codResource);
+    _taskList = new TaskList(tasks, codResource);
   }
 
   @ApiMethod(method: 'POST', path: pathREV, description: 'Remote evaluation with source string and data')
@@ -60,9 +60,9 @@ class MobilityAPI {
     return _checkForErrors(result);
   }
 
-  @ApiMethod(path: pathCOD, description: 'Lists all available tasks for code on demand')
-  CodInformation codeOnDemand() {
-    return _codInformation;
+  @ApiMethod(path: pathTaskList, description: 'Lists all available tasks with their metadata and the cod resource')
+  TaskList listAvailableTasks() {
+    return _taskList;
   }
 
   StringResponse _checkForErrors(dynamic result) {
@@ -104,9 +104,9 @@ class StringResponse {
   const StringResponse(this.response);
 }
 
-class CodInformation {
+class TaskList {
   final List<Task> tasks;
   final String codResource;
 
-  CodInformation(this.tasks, this.codResource);
+  TaskList(this.tasks, this.codResource);
 }

@@ -25,7 +25,7 @@ main() async {
 
   //Retrieve the available code on demand tasks and the path to the resources cod resources
   //The path is 'cod', so the resource address is http://localhost:8080/cod/{resource})
-  List<Task> tasks = await client.retrieveCodTasks();
+  List<Task> tasks = await client.retrieveTaskList();
   tasks.forEach((task) => print(task.resource));
 
   //Filename of the task

@@ -35,9 +35,9 @@ class Dart2JSClient extends Client {
   String get codResourceUrl => '${baseUrl}${codResource}';
 
   @override
-  Future<List<Task>> retrieveCodTasks() async {
+  Future<List<Task>> retrieveTaskList() async {
     var client = new BrowserClient();
-    http.Response response = await client.get(codUrl);
+    http.Response response = await client.get(taskListUrl);
 
     List<Task> tasks = [];
     var decoded = JSON.decode(response.body);

@@ -35,8 +35,8 @@ class StandaloneClient extends Client {
   String get codResourceUrl => '${baseUrl}${codResource}';
 
   @override
-  Future<List<Task>> retrieveCodTasks() async {
-    http.Response response = await http.get(codUrl);
+  Future<List<Task>> retrieveTaskList() async {
+    http.Response response = await http.get(taskListUrl);
 
     List<Task> tasks = [];
     var decoded = JSON.decode(response.body);

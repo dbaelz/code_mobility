@@ -30,7 +30,7 @@ abstract class Client {
   TaskRunner runner;
   String baseUrl;
   String execUrl;
-  String codUrl;
+  String taskListUrl;
   String revUrl;
   String fetchUrl;
   String codResource = 'cod';
@@ -39,7 +39,7 @@ abstract class Client {
   Client(this.addressServer, int this.portServer, String apiName, String apiVersion, TaskRunner this.runner) {
     baseUrl = 'http://$addressServer:$portServer/';
     execUrl = '$baseUrl/$apiName/$apiVersion/exec';
-    codUrl = '$baseUrl/$apiName/$apiVersion/cod';
+    taskListUrl = '$baseUrl/$apiName/$apiVersion/tasks';
     revUrl = '$baseUrl/$apiName/$apiVersion/rev';
     fetchUrl = '$baseUrl/$apiName/$apiVersion/fetch';
   }
@@ -47,8 +47,8 @@ abstract class Client {
   /// Returns the url of the code on demand resources on the server (http://server:port/cod).
   String get codResourceUrl;
 
-  /// Returns a [:Future<List<Task>>:] that completes with a list available code on demand tasks fetched from the server.
-  Future<List<Task>> retrieveCodTasks();
+  /// Returns a [:Future<List<Task>>:] that completes with a list of available tasks fetched from the server.
+  Future<List<Task>> retrieveTaskList();
 
   /// Returns a [:Future<String>:] that completes with the result of a local execution.
   Future<String> executeLocal(String taskDir, String filename, List<String> args);
