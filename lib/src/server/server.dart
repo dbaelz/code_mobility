@@ -75,7 +75,13 @@ class MobilityServer extends Server {
       _apiServer.enableDiscoveryApi();
     }
 
-    _httpServer = await HttpServer.bind(InternetAddress.ANY_IP_V4, _port);
+    try {
+      _httpServer = await HttpServer.bind(InternetAddress.ANY_IP_V4, _port);
+    } on SocketException catch (exception) {
+      print(exception);
+      return;
+    }
+
     _httpServer.listen((HttpRequest request) async {
       var requestPath = request.uri.path;
       while (requestPath.contains('//')) requestPath = requestPath.replaceAll('//', '/');
@@ -157,7 +163,13 @@ class RepositoryServer extends Server {
       ..level = Level.INFO
       ..onRecord.listen(print);
 
-    _httpServer = await HttpServer.bind(InternetAddress.ANY_IP_V4, port);
+    try {
+      _httpServer = await HttpServer.bind(InternetAddress.ANY_IP_V4, port);
+    } on SocketException catch (exception) {
+      print(exception);
+      return;
+    }
+
     _httpServer.listen((HttpRequest request) async {
       var requestPath = request.uri.path;
       while (requestPath.contains('//')) requestPath = requestPath.replaceAll('//', '/');
