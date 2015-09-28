@@ -21,11 +21,14 @@ import 'dart:isolate';
 import 'package:code_mobility/code_mobility.dart';
 
 main(List<String> args, SendPort sendPort) {
+  Map message = new Map();
   try {
     int n = int.parse(args[0]);
-    sendPort.send(Fibonacci.calculate(n));
+    message['result'] = Fibonacci.calculate(n);
+    sendPort.send(message);
   } catch (exception) {
-    sendPort.send(0);
+    message['error'] = 'Invalid argument';
+    sendPort.send(message);
   }
 }
 

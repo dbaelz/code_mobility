@@ -67,7 +67,7 @@ class MobilityAPI {
 
   StringResponse _checkForErrors(dynamic result) {
     if (result is TaskError) {
-      throw new BadRequestError('Invalid request: ${result.message}');
+      throw new BadRequestError('${result.message}');
     }
     return new StringResponse(result.toString());
   }

@@ -99,6 +99,9 @@ class StandaloneClient extends Client {
     var decoded = JSON.decode(body);
     if (decoded.containsKey('response')) {
       return decoded['response'];
+    } else if (decoded.containsKey('error') && decoded['error'].containsKey('message')) {
+      var error = decoded['error'];
+      return error['message'];
     } else {
       return body;
     }

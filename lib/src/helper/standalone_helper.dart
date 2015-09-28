@@ -34,7 +34,10 @@ class StandaloneHelper {
   static Future<String> getLocalTaskAsJSON(String taskDir, String filename) async {
     Uri localUri = Uri.parse(getLocalTaskPath(taskDir, filename));
     //Open as uri required, cause of an issue with File and file:// protocol
-    String content = await new File.fromUri(localUri).readAsString();
+    String content = '{}';
+    try {
+      content = await new File.fromUri(localUri).readAsString();
+    } catch (exeception) {}
     return JSON.encode(content);
   }
 }

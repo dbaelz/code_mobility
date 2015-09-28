@@ -19,12 +19,14 @@ library code_mobility.example.tasks.simpletest;
 import 'dart:isolate';
 
 main(List<String> args, SendPort sendPort) {
+  Map message = new Map();
   try {
     int n = int.parse(args[0]);
-    int result = new SimpleTask().reallySimple(n);
-    sendPort.send(result);
+    message['result'] = new SimpleTask().reallySimple(n);
+    sendPort.send(message);
   } catch (exception) {
-    sendPort.send(0);
+    message['error'] = 'Invalid argument';
+    sendPort.send(message);
   }
 }
 

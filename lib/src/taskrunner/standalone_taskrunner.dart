@@ -32,7 +32,7 @@ class StandaloneTaskRunner extends TaskRunner {
     ReceivePort receivePort = new ReceivePort();
     receivePort.listen((message) {
       receivePort.close();
-      completer.complete(message);
+      completer.complete(_handleMessage(message));
     });
 
     Isolate.spawnUri(filename, args, receivePort.sendPort).then((isolate){}).catchError((error) {
@@ -52,7 +52,7 @@ class StandaloneTaskRunner extends TaskRunner {
         receivePort.listen((message) {
           receivePort.close();
           file.delete();
-          completer.complete(message);
+          completer.complete(_handleMessage(message));
         });
 
         Isolate.spawnUri(file.uri, args, receivePort.sendPort).then((isolate){}).catchError((error) {
@@ -61,5 +61,20 @@ class StandaloneTaskRunner extends TaskRunner {
       });
     });
     return completer.future;
+  }
+
+  _handleMessage(var message) {
+    if (message is Map) {
+      Map map = message;
+      if (map.containsKey('result')) {
+        return map['result'];
+      } else if (map.containsKey('error')) {
+        return new TaskError(map['error']);
+      } else {
+        return new TaskError(executionError);
+      }
+    } else {
+      return new TaskError(executionError);
+    }
   }
 }
