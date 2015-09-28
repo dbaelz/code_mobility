@@ -3135,13 +3135,16 @@
   }], ["code_mobility.example.tasks.fibonacci", "fibonacci.dart",, S, {
     "^": "",
     main: [function(args, sendPort) {
-      var n, exception;
+      var message, n, exception;
+      message = P.LinkedHashMap_LinkedHashMap(null, null, null, null, null);
       try {
         n = H.Primitives_parseInt(J.$index$as(args, 0), null, null);
-        sendPort.send$1(S.Fibonacci_calculate(n));
+        J.$indexSet$a(message, "result", S.Fibonacci_calculate(n));
+        sendPort.send$1(message);
       } catch (exception) {
         H.unwrapException(exception);
-        sendPort.send$1(0);
+        J.$indexSet$a(message, "error", "Invalid argument");
+        sendPort.send$1(message);
       }
     }, "call$2", "fibonacci__main$closure", 4, 0, 8],
     Fibonacci_calculate: function(n) {
@@ -4603,6 +4606,11 @@
       if (a0 >>> 0 === a0 && a0 < receiver.length)
         return receiver[a0];
     return J.getInterceptor$as(receiver).$index(receiver, a0);
+  };
+  J.$indexSet$a = function(receiver, a0, a1) {
+    if (receiver.constructor == Array && !receiver.immutable$list && a0 >>> 0 === a0 && a0 < receiver.length)
+      return receiver[a0] = a1;
+    return J.getInterceptor$a(receiver).$indexSet(receiver, a0, a1);
   };
   J.$lt$n = function(receiver, a0) {
     if (typeof receiver == "number" && typeof a0 == "number")

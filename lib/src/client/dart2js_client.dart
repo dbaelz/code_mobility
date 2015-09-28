@@ -55,8 +55,8 @@ class Dart2JSClient extends Client {
 
   @override
   Future<String> executeLocal(String taskDir, String filename, List<String> args) async {
-    var result = await runner.execute(Uri.parse('${taskDir}/${filename}'), args);
-    return result;
+    var result = await runner.execute(Uri.parse('${taskDir}/${filename}.js'), args);
+    return _checkRunnerResult(result);
   }
 
   @override
@@ -105,6 +105,9 @@ class Dart2JSClient extends Client {
     var decoded = JSON.decode(body);
     if (decoded.containsKey('response')) {
       return decoded['response'];
+    } else if (decoded.containsKey('error') && decoded['error'].containsKey('message')) {
+      var error = decoded['error'];
+      return error['message'];
     } else {
       return body;
     }

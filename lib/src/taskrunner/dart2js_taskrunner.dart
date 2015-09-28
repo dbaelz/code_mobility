@@ -29,7 +29,7 @@ class Dart2JSTaskRunner extends TaskRunner {
     ReceivePort receivePort = new ReceivePort();
     receivePort.listen((message) {
       receivePort.close();
-      completer.complete(message);
+      completer.complete(_handleMessage(message));
     });
 
     Isolate.spawnUri(filename, args, receivePort.sendPort).then((isolate){}).catchError((error) {
@@ -43,5 +43,20 @@ class Dart2JSTaskRunner extends TaskRunner {
   Future<dynamic> executeFromSourceString(String sourcecode, List<String> args) {
     Completer completer = new Completer()..complete(new TaskError(notSupportedError));
     return completer.future;
+  }
+
+  _handleMessage(var message) {
+    if (message is Map) {
+      Map map = message;
+      if (map.containsKey('result')) {
+        return map['result'];
+      } else if (map.containsKey('error')) {
+        return new TaskError(map['error']);
+      } else {
+        return new TaskError(executionError);
+      }
+    } else {
+      return new TaskError(executionError);
+    }
   }
 }
