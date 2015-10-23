@@ -19,5 +19,3 @@
 library code_mobility.dart2js;
 
 export 'src/client/dart2js_client.dart';
-
-export 'src/taskrunner/dart2js_taskrunner.dart';

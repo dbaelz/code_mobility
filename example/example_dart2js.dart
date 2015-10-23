@@ -26,7 +26,7 @@ const String hostname = 'localhost';
 
 main() async {
   //Initialize dart2js client for a server running with default server config on localhost.
-  Dart2JSClient client = new Dart2JSClient(hostname, 8080, 'mobilityapi', 'v1', new Dart2JSTaskRunner());
+  Dart2JSClient client = new Dart2JSClient(hostname, 8080, 'mobilityapi', 'v1', new DefaultTaskRunner());
 
   //Retrieve the available code on demand tasks and the path to the resources cod resources
   //The path is 'cod', so the resource address is http://localhost:8080/cod/{resource})
@@ -35,7 +35,6 @@ main() async {
 
   //Filename of the task
   String fibonacciFilename = tasks.where((task) => task.resource == 'fibonacci.dart').first.resource;
-  String simpleFilename = tasks.where((task) => task.resource == 'simple_task.dart').first.resource;
   //The arguments (data) for the task
   List<String> args = ['123'];
 
@@ -67,7 +66,7 @@ main() async {
   //Sends the source code as string to the remote device. There it's executed.
   //Currently only the task without the imports/dependencies is sent. Therefore it's only suitable for very simple tasks.
   //The file must be available as *.dart file.
-  String rev = 'Remote evaluation with source: ${await client.remoteEvaluationWithSource('tasks', simpleFilename, args)}';
+  String rev = 'Remote evaluation with source: ${await client.remoteEvaluationWithSource('tasks', fibonacciFilename, args)}';
   print(rev);
   document.body.append(new Element.div()..setInnerHtml(rev));
 }

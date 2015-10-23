@@ -21,3 +21,4 @@ export 'src/client/client.dart';
 
 export 'src/taskrunner/task.dart';
 export 'src/taskrunner/taskrunner.dart';
+export 'src/taskrunner/default_taskrunner.dart';

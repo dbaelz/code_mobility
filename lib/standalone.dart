@@ -20,4 +20,3 @@ library code_mobility.standalone;
 
 export 'src/client/standalone_client.dart';
 export 'src/server/server.dart';
-export 'src/taskrunner/standalone_taskrunner.dart';

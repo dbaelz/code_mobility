@@ -14,18 +14,15 @@
  * limitations under the License.
 */
 
-library code_mobility.taskrunner.standalone;
+library code_mobility.taskrunner.defaultimpl;
 
 import 'dart:async';
-import 'dart:io';
 import 'dart:isolate';
-
-import 'package:uuid/uuid.dart';
 
 import 'taskrunner.dart';
 
-/// Implementation of the [TaskRunner] for the standalone vm.
-class StandaloneTaskRunner extends TaskRunner {
+/// Implementation of the [TaskRunner] for the standalone vm and the browser.
+class DefaultTaskRunner extends TaskRunner {
   @override
   Future<dynamic> execute(Uri filename, List<String> args) {
     final completer = new Completer();
@@ -44,21 +41,15 @@ class StandaloneTaskRunner extends TaskRunner {
   @override
   Future<dynamic> executeFromSourceString(String sourcecode, List<String> args) {
     final completer = new Completer();
-    var filename = new Uuid().v4();
-    var systemTempDir = Directory.systemTemp;
-    new File('${systemTempDir.path}/code_mobility/${filename}').create(recursive: true).then((file) {
-      file.writeAsString(sourcecode).then((file) {
-        ReceivePort receivePort = new ReceivePort();
-        receivePort.listen((message) {
-          receivePort.close();
-          file.delete();
-          completer.complete(_handleMessage(message));
-        });
+    ReceivePort receivePort = new ReceivePort();
+    receivePort.listen((message) {
+      receivePort.close();
+      completer.complete(_handleMessage(message));
+    });
 
-        Isolate.spawnUri(file.uri, args, receivePort.sendPort).then((isolate){}).catchError((error) {
-          completer.complete(new TaskError(executionError));
-        });
-      });
+    Uri uri = Uri.parse('data:application/dart;charset=utf-8,${Uri.encodeComponent(sourcecode)}');
+    Isolate.spawnUri(uri, args, receivePort.sendPort).then((isolate){}).catchError((error) {
+      completer.complete(new TaskError(executionError));
     });
     return completer.future;
   }

@@ -29,6 +29,6 @@ main() async {
       resource: 'simple_task.dart',
       description: 'A simple task without 3th party imports/dependencies'));
 
-  MobilityServer server = new MobilityServer(new StandaloneTaskRunner(), tasks);
+  MobilityServer server = new MobilityServer(new DefaultTaskRunner(), tasks);
   await server.start();
 }

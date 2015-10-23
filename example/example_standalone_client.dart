@@ -21,7 +21,7 @@ import 'package:code_mobility/standalone.dart';
 
 main() async {
   //Initialize standalone client for a server running with default server config on localhost
-  StandaloneClient client = new StandaloneClient('localhost', 8080, 'mobilityapi', 'v1', new StandaloneTaskRunner());
+  StandaloneClient client = new StandaloneClient('localhost', 8080, 'mobilityapi', 'v1', new DefaultTaskRunner());
 
   //Retrieve the available code on demand tasks and the path to the resources cod resources
   //The path is 'cod', so the resource address is http://localhost:8080/cod/{resource})
@@ -30,7 +30,6 @@ main() async {
 
   //Filename of the task
   String fibonacciFilename = tasks.where((task) => task.resource == 'fibonacci.dart').first.resource;
-  String simpleFilename = tasks.where((task) => task.resource == 'simple_task.dart').first.resource;
   //The arguments (data) for the task
   List<String> args = ['123'];
 
@@ -51,7 +50,7 @@ main() async {
 
   //Sends the source code as string to the remote device. There it's executed.
   //Currently only the task without the imports/dependencies is sent. Therefore it's only suitable for very simple tasks.
-  print('Remote evaluation with source: ${await client.remoteEvaluationWithSource('tasks', simpleFilename, args)}');
+  print('Remote evaluation with source: ${await client.remoteEvaluationWithSource('tasks', fibonacciFilename, args)}');
 }
 
 
