@@ -2,7 +2,7 @@ name: code_mobility
 description: A library for code mobility with Dart.
 version: 0.0.1
 author: Daniel Bälz <me@dbaelz.de>
-#homepage: https://www.example.com
+homepage: https://github.com/dbaelz/code_mobility
 
 environment:
   sdk: '>=1.12.2 <2.0.0'
