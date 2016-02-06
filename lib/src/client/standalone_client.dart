@@ -28,25 +28,39 @@ library code_mobility.client.standalone;
 
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:http/http.dart' as http;
 
-import 'client.dart';
 import '../helper/standalone_helper.dart';
 import '../taskrunner/task.dart';
 import '../taskrunner/taskrunner.dart';
+import 'client.dart';
 
 /// Client implementation for the standalone vm.
 class StandaloneClient extends Client {
-  StandaloneClient(addressServer, int portServer, String apiName, String apiVersion, TaskRunner runner)
-      : super(addressServer, portServer, apiName, apiVersion, runner);
+  String trustedCAsFilename;
+  http.BaseClient client;
+
+  StandaloneClient(addressServer, int portServer, bool https,
+      String apiName, String apiVersion, TaskRunner runner, {String this.trustedCAsFilename})
+      : super(addressServer, portServer, https, apiName, apiVersion, runner) {
+
+    if (https && trustedCAsFilename != null) {
+      String trustedCAs = Platform.script.resolve(trustedCAsFilename).toFilePath();
+      SecurityContext securityContext = new SecurityContext()..setTrustedCertificates(file: trustedCAs);
+      client = new http.IOClient(new HttpClient(context: securityContext));
+    } else {
+      client = new http.IOClient();
+    }
+  }
 
   @override
   String get codResourceUrl => '${baseUrl}${codResource}';
 
   @override
   Future<List<Task>> retrieveTaskList() async {
-    http.Response response = await http.get(taskListUrl);
+    http.Response response = await client.get(taskListUrl);
 
     List<Task> tasks = [];
     var decoded = JSON.decode(response.body);
@@ -72,7 +86,7 @@ class StandaloneClient extends Client {
   @override
   Future<String> executeRemote(String filename, List<String> args) async {
     String body = '{"filename":"${filename}","args":${JSON.encode(args)}}';
-    http.Response response = await http.post(execUrl, body: body);
+    http.Response response = await client.post(execUrl, body: body);
     return _checkJSONResult(response.body);
   }
 
@@ -86,7 +100,7 @@ class StandaloneClient extends Client {
   @override
   Future<String> remoteEvaluationWithFetch(String href, List<String> args) async {
     String body = '{"href":"${href}","args":${JSON.encode(args)}}';
-    http.Response response = await http.post(fetchUrl, body: body);
+    http.Response response = await client.post(fetchUrl, body: body);
     return _checkJSONResult(response.body);
   }
 
@@ -94,7 +108,7 @@ class StandaloneClient extends Client {
   Future<String> remoteEvaluationWithSource(String taskDir, String filename, List<String> args) async {
     String source = await StandaloneHelper.getLocalTaskAsJSON(taskDir, filename);
     String body = '{"source":${source},"args":${JSON.encode(args)}}';
-    http.Response response = await http.post(revUrl, body: body);
+    http.Response response = await client.post(revUrl, body: body);
     return _checkJSONResult(response.body);
   }
 

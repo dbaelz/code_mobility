@@ -52,6 +52,7 @@ class MobilityServer extends Server {
   final ApiServer _apiServer = new ApiServer(prettyPrint: true);
 
   HttpServer _httpServer;
+  HttpsInformation _httpsInformation;
   MobilityAPI _api;
   int _port;
   bool _discovery;
@@ -66,12 +67,15 @@ class MobilityServer extends Server {
   /// The local directory for tasks is the [taskDir] subdirectory.
   /// A code on demand resources is available at http://server:port/{codResource}/{resource}
   MobilityServer(TaskRunner taskRunner, List<Task> tasks,
-                 {int port: 8080, bool discovery: false, String codResource: 'cod', String taskDir: 'tasks'}) {
+      {int port: 8080, HttpsInformation httpsInformation,
+      bool discovery: false, String codResource: 'cod', String taskDir: 'tasks'}) {
     _port = port;
+    _httpsInformation = httpsInformation;
     _discovery = discovery;
     _codResource = codResource;
     _taskDir = taskDir;
     _api = new MobilityAPI(taskRunner, tasks, _codResource, _taskDir);
+    _apiServer.addApi(_api);
   }
 
   @override
@@ -80,13 +84,21 @@ class MobilityServer extends Server {
       ..level = Level.INFO
       ..onRecord.listen(print);
 
-    _apiServer.addApi(_api);
     if (_discovery) {
       _apiServer.enableDiscoveryApi();
     }
 
     try {
-      _httpServer = await HttpServer.bind(InternetAddress.ANY_IP_V4, _port);
+      if (_httpsInformation == null) {
+        _httpServer = await HttpServer.bind(InternetAddress.ANY_IP_V4, _port);
+      } else {
+        String certificateChain = Platform.script.resolve(_httpsInformation.certificateFilename).toFilePath();
+        String serverKey = Platform.script.resolve(_httpsInformation.keyFilename).toFilePath();
+        SecurityContext serverContext = new SecurityContext();
+        serverContext.useCertificateChain(certificateChain);
+        serverContext.usePrivateKey(serverKey, password: _httpsInformation.keyPassword);
+        _httpServer = await HttpServer.bindSecure(InternetAddress.ANY_IP_V4, _port, serverContext);
+      }
     } on SocketException catch (exception) {
       print(exception);
       return;
@@ -131,7 +143,6 @@ class MobilityServer extends Server {
           apiResponse = await _apiServer.handleHttpApiRequest(apiRequest);
           sendApiResponse(apiResponse, request.response);
         }
-
       } catch (error, stacktrace) {
         if (error is NotFoundError) {
           apiResponse = new HttpApiResponse.error(HttpStatus.NOT_FOUND, 'No method found matching HTTP method: ${request.method} '
@@ -142,7 +153,8 @@ class MobilityServer extends Server {
         sendApiResponse(apiResponse, request.response);
       }
     });
-    log.info('Server listening on http://${_httpServer.address.host}:${_httpServer.port}');
+    String protocol = _httpsInformation == null ? 'http' : 'https';
+    log.info('Server listening on ${protocol}://${_httpServer.address.host}:${_httpServer.port}');
   }
 
   @override
@@ -157,6 +169,7 @@ class RepositoryServer extends Server {
   final Logger log = new Logger('repository server');
 
   HttpServer _httpServer;
+  HttpsInformation _httpsInformation;
   int port;
   String codResource;
   String taskDir;
@@ -165,7 +178,9 @@ class RepositoryServer extends Server {
   ///
   /// The code is available at http://server:port/{codResource}/{resource}
   /// and the local tasks are in the [taskDir] subdirectory.
-  RepositoryServer({int this.port: 4040, String this.codResource: 'repository', String this.taskDir: 'tasks'});
+  RepositoryServer({int this.port: 4040, HttpsInformation httpsInformation, String this.codResource: 'repository', String this.taskDir: 'tasks'}) {
+    _httpsInformation = httpsInformation;
+  }
 
   @override
   Future start() async {
@@ -174,7 +189,16 @@ class RepositoryServer extends Server {
       ..onRecord.listen(print);
 
     try {
-      _httpServer = await HttpServer.bind(InternetAddress.ANY_IP_V4, port);
+      if (_httpsInformation == null) {
+        _httpServer = await HttpServer.bind(InternetAddress.ANY_IP_V4, port);
+      } else {
+        String certificateChain = Platform.script.resolve(_httpsInformation.certificateFilename).toFilePath();
+        String serverKey = Platform.script.resolve(_httpsInformation.keyFilename).toFilePath();
+        SecurityContext serverContext = new SecurityContext();
+        serverContext.useCertificateChain(certificateChain);
+        serverContext.usePrivateKey(serverKey, password: _httpsInformation.keyPassword);
+        _httpServer = await HttpServer.bindSecure(InternetAddress.ANY_IP_V4, port, serverContext);
+      }
     } on SocketException catch (exception) {
       print(exception);
       return;
@@ -223,7 +247,8 @@ class RepositoryServer extends Server {
           ..close();
       }
     });
-    log.info('RepositoryServer listening on http://${_httpServer.address.host}:${_httpServer.port}');
+    String protocol = _httpsInformation == null ? 'http' : 'https';
+    log.info('RepositoryServer listening on ${protocol}://${_httpServer.address.host}:${_httpServer.port}');
   }
 
   @override
@@ -231,4 +256,13 @@ class RepositoryServer extends Server {
     _httpServer.close();
     log.info('Server stopped');
   }
+}
+
+/// Provides all required information for HTTPS server using TLS/SSL.
+class HttpsInformation {
+  String certificateFilename;
+  String keyFilename;
+  String keyPassword;
+
+  HttpsInformation(this.certificateFilename, this.keyFilename, this.keyPassword);
 }

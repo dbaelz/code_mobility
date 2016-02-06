@@ -31,7 +31,7 @@ import 'package:code_mobility/standalone.dart';
 
 main() async {
   //Initialize standalone client for a server running with default server config on localhost
-  StandaloneClient client = new StandaloneClient('localhost', 8080, 'mobilityapi', 'v1', new DefaultTaskRunner());
+  StandaloneClient client = new StandaloneClient('localhost', 8080, false, 'mobilityapi', 'v1', new DefaultTaskRunner());
 
   //Retrieve the available code on demand tasks and the path to the resources cod resources
   //The path is 'cod', so the resource address is http://localhost:8080/cod/{resource})

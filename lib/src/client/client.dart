@@ -46,15 +46,16 @@ abstract class Client {
   String codResource = 'cod';
 
   /// Creates a new client with the given connection information and a [TaskRunner] implementation.
-  Client(this.addressServer, int this.portServer, String apiName, String apiVersion, TaskRunner this.runner) {
-    baseUrl = 'http://$addressServer:$portServer/';
+  Client(this.addressServer, int this.portServer, bool https, String apiName, String apiVersion, TaskRunner this.runner) {
+    String protocol = https ? 'https' : 'http';
+    baseUrl = '${protocol}://$addressServer:$portServer/';
     execUrl = '$baseUrl/$apiName/$apiVersion/exec';
     taskListUrl = '$baseUrl/$apiName/$apiVersion/tasks';
     revUrl = '$baseUrl/$apiName/$apiVersion/rev';
     fetchUrl = '$baseUrl/$apiName/$apiVersion/fetch';
   }
 
-  /// Returns the url of the code on demand resources on the server (http://server:port/cod).
+  /// Returns the url of the code on demand resources on the server (protocol://server:port/cod).
   String get codResourceUrl;
 
   /// Returns a [:Future<List<Task>>:] that completes with a list of available tasks fetched from the server.

@@ -36,7 +36,7 @@ const String hostname = 'localhost';
 
 main() async {
   //Initialize dart2js client for a server running with default server config on localhost.
-  Dart2JSClient client = new Dart2JSClient(hostname, 8080, 'mobilityapi', 'v1', new DefaultTaskRunner());
+  Dart2JSClient client = new Dart2JSClient(hostname, 8080, false, 'mobilityapi', 'v1', new DefaultTaskRunner());
 
   //Retrieve the available code on demand tasks and the path to the resources cod resources
   //The path is 'cod', so the resource address is http://localhost:8080/cod/{resource})
