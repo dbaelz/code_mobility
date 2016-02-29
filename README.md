@@ -3,6 +3,9 @@ A library for code mobility with Dart. This library was initially created for my
 Also, a second library for decision-making, called [Adaptify](https://github.com/dbaelz/adaptify), was developed.
 For more information on this topic see the [blog post](https://blog.inovex.de/adaptive-code-execution-with-dart/) on the blog of my employer [inovex GmbH](https://www.inovex.de/).
 
+For information how to use the library in a project see the description on the [Pub Repository](https://pub.dartlang.org/packages/code_mobility).
+
+
 Concepts
 ---------
 With the Code Mobility library different concepts of code distribution and execution are implemented.
