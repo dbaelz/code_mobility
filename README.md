@@ -25,7 +25,7 @@ On the requesting device, the source code is executed and the results are proces
 The best known and widely used example for code on demand is JavaScript in a browser.
 Figure above shows the different approaches for code mobility.
 
-![Code Mobility](/code_mobility.png)
+![Code Mobility](https://github.com/dbaelz/code_mobility/blob/master/code_mobility.png)
 
 Structure
 ----------
