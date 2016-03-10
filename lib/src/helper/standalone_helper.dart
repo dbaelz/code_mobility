@@ -47,7 +47,7 @@ class StandaloneHelper {
     String content = '{}';
     try {
       content = await new File.fromUri(localUri).readAsString();
-    } catch (exeception) {}
+    } catch (exception) {}
     return JSON.encode(content);
   }
 }

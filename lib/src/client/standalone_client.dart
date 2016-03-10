@@ -48,7 +48,7 @@ class StandaloneClient extends Client {
 
     if (https && trustedCAsFilename != null) {
       String trustedCAs = Platform.script.resolve(trustedCAsFilename).toFilePath();
-      SecurityContext securityContext = new SecurityContext()..setTrustedCertificates(file: trustedCAs);
+      SecurityContext securityContext = new SecurityContext()..setTrustedCertificates(trustedCAs);
       client = new http.IOClient(new HttpClient(context: securityContext));
     } else {
       client = new http.IOClient();
